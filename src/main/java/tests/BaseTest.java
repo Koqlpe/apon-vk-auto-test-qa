@@ -1,12 +1,14 @@
 package tests;
 
 import com.codeborne.selenide.Configuration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import pages.BasePage;
 
 public abstract class BaseTest {
-    @BeforeEach
-    public void init() {
+    @BeforeAll
+    public static void init() {
         Configuration.browser = "chrome";
-        Configuration.baseUrl = "https://ok.ru/";
+        Configuration.baseUrl = BasePage.BASE_URL;
     }
 }

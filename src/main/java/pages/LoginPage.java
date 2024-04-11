@@ -9,33 +9,39 @@ public class LoginPage extends BasePage {
     private final String botUsername = "technopol33";
     private final String botPassword = "technopolisPassword";
 
-    public LoginPage login() {
+    private final By loginField = By.xpath(".//*[@id=\"field_email\"]");
+    private final By passwordField = By.xpath("//*[@id=\"field_password\"]");
+
+    private final By loginButton = By.xpath(".//*[@class=\"button-pro __wide\"]");
+    private final By errorMessage = By.xpath(".//*[@class=\"input-e login_error\"]");
+
+    public FeedPage login() {
         setUsername(botUsername);
         setPassword(botPassword);
         clickLoginButton();
-        return this;
+        return new FeedPage();
     }
     public LoginPage login(String username, String password) {
         setUsername(username);
         setPassword(password);
-        clickLoginButton();
-        return this;
+        return clickLoginButton();
     }
     public LoginPage setUsername(String username) {
-        $(By.xpath("//*[@id=\"field_email\"]")).val(username);
+        $(loginField).val(username);
         return this;
     }
 
     public LoginPage setPassword(String password) {
-        $(By.xpath("//*[@id=\"field_password\"]")).val(password);
+        $(passwordField).val(password);
         return this;
     }
 
-    public void clickLoginButton() {
-        $(By.xpath("//*[@class=\"button-pro __wide\"]")).click();
+    public LoginPage clickLoginButton() {
+        $(loginButton).shouldBe(and("Кнопка входа должна быть доступна и видна", enabled, visible)).click();
+        return this;
     }
 
-    public void showErrorMessage() {
-        $(By.xpath("//*[@class=\"input-e login_error\"]")).shouldBe(visible);
+    public String showErrorMessage() {
+        return $(errorMessage).shouldBe(visible.because("Пользователь должен понимать причину ошибки входа")).getText();
     }
 }
