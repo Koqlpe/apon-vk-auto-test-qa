@@ -1,37 +1,39 @@
 package tests;
 
+import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import pages.FeedPage;
-import pages.UserAccountPage;
-import pages.LoginPage;
-import pages.UserAccountPhotosPage;
+import pages.*;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class AccountTest extends BaseTest {
     private UserAccountPage myAccount;
+    private ToolBar toolBar = new ToolBar();
 
     @BeforeAll
     public static void openSiteAndLogin() {
-        open("/", LoginPage.class).login();
-    }
+        String botUsername = "technopol33";
+        String botPassword = "technopolisPassword";
 
-    @BeforeEach
-    public void setup() {
-        myAccount = new FeedPage().openAccountPage();
+        new LoginPage()
+                .setUsername(botUsername)
+                .setPassword(botPassword)
+                .clickLoginButton();
     }
 
     @Nested
-    class TextFieldTest {
+    class StatusFieldTest {
+        @BeforeEach
+        public void setup() {
+            myAccount = new NavigationPanel().goToProfile();
+        }
+
         @Test
         public void userCanSetStatusTest() {
             String status = "Статусный статус";
@@ -48,12 +50,28 @@ public class AccountTest extends BaseTest {
     @Nested
     class PhotosTest {
         private UserAccountPhotosPage myAccountPhotos;
+        private NavigationPanel navigation = new NavigationPanel();
 
-//        @BeforeEach
-//        public void setup() {
-//            myAccount = new FeedPage().openAccountPage();
-//        }
+        @BeforeEach
+        public void setup() {
+            myAccount = navigation.goToProfile();
+        }
 
+        @ParameterizedTest(name = "Тест: пользователь добавляет фото")
+        @ValueSource(strings = {"Личные фотографии", "Разное"})
+        public void userAddPhotoTest(String album) {
+            myAccountPhotos = myAccount
+                    .goToPhotos()
+                    .openAlbum(album);
+
+            int expectedPhotosAmount = myAccountPhotos.countPhotos() + 1;
+            File img = new File("src/main/resources/photos/vkeducation.jpg");
+            myAccountPhotos.addPhoto(img);
+
+            assertEquals(expectedPhotosAmount, myAccountPhotos.countPhotos(), () -> album + ": Количество фотографий не совпадает");
+        }
+
+        @Disabled("Был переработан на тест выше, планируется этот откорректировать, а здесь продемонстрировать ещё одну аннотацию JUnit :)")
         @ParameterizedTest(name = "Тест: пользователь добавляет первое фото")
         @ValueSource(strings = {"Личные фотографии", "Разное"})
         public void userAddFirstPhotoTest(String album) {
@@ -70,4 +88,9 @@ public class AccountTest extends BaseTest {
         }
     }
 
+    @AfterAll
+    public static void cleanUp() {
+        ToolBar toolBar = new ToolBar();
+        toolBar.logOut();
+    }
 }

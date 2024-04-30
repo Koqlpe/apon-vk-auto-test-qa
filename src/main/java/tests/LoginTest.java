@@ -1,50 +1,58 @@
 package tests;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import com.codeborne.selenide.SelenideElement;
-import static com.codeborne.selenide.Selenide.*;
+import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.By;
 import pages.*;
 
 public class LoginTest extends BaseTest {
-    private String noLogin = "Введите логин";
-    private String noPassword = "Введите пароль";
-    private LoginPage loginPage;
+    public final String botUsername = "technopol33";
+    public final String botPassword = "technopolisPassword";
+    private final String noLogin = "Введите логин";
+    private final String noPassword = "Введите пароль";
 
-    @BeforeEach
-    public void setup() {
-        loginPage = open("/", LoginPage.class);
-    }
+    @Nested
+    class LoginWithExistUser {
+        ToolBar toolBar = new ToolBar();
+        @Test
+        @DisplayName("Тест: вход с действительными логином и паролем")
+        public void userCanLogin() {
+            LoginPage loginPage = new LoginPage();
+            loginPage
+                    .setUsername(botUsername)
+                    .setPassword(botPassword)
+                    .clickLoginButton();
+            String currentUsername = new FeedPage().getUsernameInNavigation();
+            assertEquals("technopol33 technopol33", currentUsername);
+        }
 
-    @Test
-    @DisplayName("Тест: вход с действительными логином и паролем")
-    public void userCanLogin() {
-        String currentUsername = loginPage.login().getUsernameInNavigation();
-        assertEquals("technopol33 technopol33", currentUsername);
+        @AfterEach
+        public void cleanUp() {
+            toolBar.logOut();
+        }
     }
 
     @ParameterizedTest(name = "Тест: вход без логина")
     @ValueSource(strings = {"abracadabra", "technopolisPassword", ""})
     public void loginWithoutUsername(String password) {
+        LoginPage loginPage = new LoginPage();
         String errorMessage = loginPage
-            .login("", password)
-            .showErrorMessage();
+                .setPassword(password)
+                .clickLoginButton()
+                .showErrorMessage();
         assertEquals(noLogin, errorMessage);
     }
 
     @ParameterizedTest(name = "Тест: вход без пароля")
     @ValueSource(strings = {"abracadabra", "technopol33"})
     public void loginWithoutPassword(String login) {
+        LoginPage loginPage = new LoginPage();
         String errorMessage = loginPage
-                .login(login, "")
+                .setUsername(login)
+                .clickLoginButton()
                 .showErrorMessage();
         assertEquals(noPassword, errorMessage);
     }

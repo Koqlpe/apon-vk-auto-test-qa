@@ -7,33 +7,38 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class FeedPage extends BasePage {
     private final static String URL = "/feed";
-    private final By tapeButton = By.xpath(".//*[@class=\"link__91azp tab__9agyv __is-active__9agyv __primary__91azp\"]"); // Рекомендации
-    private final By searchField = By.xpath("//input[@name=\"st.query\"]");
+    private final By tapeButton = By.xpath(".//*[@data-l=\"feedTargetFilterId,43\"]"); // Рекомендации
+    private final By searchField = By.xpath(".//input[@name=\"st.query\"]");
     private final By accountButton = By.xpath(".//*[@data-l=\"t,userPage\"]");
+    private final By accountLabel = By.xpath(".//*[@class=\"tico ellip\"]");
+
 
     public FeedPage() {
         checkPage();
     }
 
     public void checkPage() {
-        $(tapeButton).shouldBe(visible);
+        $(tapeButton).shouldBe(visible
+                .because("Кнопка рекомендации должна отображаться на странице Ленты новостей"));
     }
 
     public String getUsernameInNavigation() {
-        return $(By.xpath("//*[@class=\"tico ellip\"]"))
+        return $(accountLabel)
                 .shouldBe(visible.because("Имя и Фамилия пользователя должны отображаться на панели навигации"))
                 .getText();
     }
 
     public SearchPage searchFor(String query) {
-        $(searchField).shouldBe(visible.because("Пользователь должен видеть поле ввода.")).val(query).pressEnter();
+        $(searchField).shouldBe(visible.because("Пользователь должен видеть поле ввода"))
+                .val(query)
+                .pressEnter();
         return new SearchPage();
     }
 
     public UserAccountPage openAccountPage() {
         $(accountButton)
                 .shouldBe(exist.because("Для перехода в профиль в панели навигации должна" +
-                "существовать и отображаться кнопка перехода в профиль."))
+                "существовать и отображаться кнопка перехода в профиль"))
                 .click();
         return new UserAccountPage();
     }

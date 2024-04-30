@@ -1,27 +1,29 @@
 package tests;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.By;
 import pages.*;
-public class SearchTest extends BaseTest {
+public class SearchUsersTest extends BaseTest {
     private FeedPage feed = new FeedPage();
+    private ToolBar toolBar = new ToolBar();
     private SearchPage searchPage;
 
     @BeforeAll
     public static void login() {
-        open("/", LoginPage.class).login();
+        String botUsername = "technopol33";
+        String botPassword = "technopolisPassword";
+
+        new LoginPage()
+                .setUsername(botUsername)
+                .setPassword(botPassword)
+                .clickLoginButton();
     }
 
     @ParameterizedTest(name = "Тест: поиск пользователей по имени")
@@ -30,13 +32,17 @@ public class SearchTest extends BaseTest {
        searchPage = feed
                 .searchFor(query);
        searchPage.checkPage();
-        SelenideElement firstResult = searchPage.searchPeoples(query).first();
-        assertTrue(firstResult.text().contains(query), () -> "Первый результат не совпадает с запросом: " + query);
+       SelenideElement firstResult = searchPage.searchPeoples().first();
+       assertTrue(firstResult.text().contains(query), () -> "Первый результат не совпадает с запросом: " + query);
     }
 
     @AfterEach
     public void clearAndReturn() {
-        System.out.println("Тест закончен!!!!");
-        feed = searchPage.returnToFeedPage();
+        feed = toolBar.returnToFeedPage();
+    }
+
+    @AfterAll
+    public static void logOut() {
+        new ToolBar().logOut();
     }
 }

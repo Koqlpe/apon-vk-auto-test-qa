@@ -3,11 +3,8 @@ package pages;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
-import java.io.File;
-
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.WebDriverRunner.url;
 
 public class UserAccountPage extends BasePage {
@@ -16,16 +13,17 @@ public class UserAccountPage extends BasePage {
     private final By photos = By.xpath(".//*[@data-l=\"t,header-v2\"]");
     private final By statusActivation = By.xpath(".//*[@data-save-url=\"/dk?cmd=SaveProfileInfo\"]");
 
-    private final By statusField = By.xpath(".//textarea[@name=\"long_bio\"]");
+    private final By statusField = By.xpath(".//div[@tsid=\"TextFieldText\"]");
+    private final By statusEditField = By.xpath(".//textarea[@name=\"long_bio\"]");
     private final By saveStatusButton = By.xpath(".//button[@data-l=\"t,textField-save\"]");
 
     public UserAccountPage() {
         checkPage();
     }
 
-    private void checkPage() {
-        $(username).shouldBe(visible);
-        $(profileEntry).shouldHave(href(url()));
+    public void checkPage() {
+        $(username).shouldBe(visible.because("В профиле пользователя должно отображаться его имя"));
+        $(profileEntry).shouldHave(href(url()).because("Ссылки в адресной строке и в имени пользователя должны совпадать"));
     }
 
     public UserAccountPhotosPage goToPhotos() {
@@ -35,20 +33,17 @@ public class UserAccountPage extends BasePage {
     }
 
     public SelenideElement getStatus() {
-        return $(statusField).shouldBe(exist.because("Статус должен отображаться в профиле"));
+        return $(statusEditField).shouldBe(exist.because("Статус должен отображаться в профиле"));
     }
 
     public UserAccountPage setStatus(String status) {
-        // Вопрос
-        $(statusActivation).click();
-        $(statusField)
+        $(statusActivation).shouldBe(visible.because("Для изменения статуса должно отображаться поле статуса")).click();
+        $(statusEditField)
                 .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
-                .val(status);
+                .setValue(status);
         $(saveStatusButton)
                 .shouldBe(enabled.because("Кнопка Сохранение должна быть доступна"))
                 .click();
         return this;
     }
-
-
 }
