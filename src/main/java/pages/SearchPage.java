@@ -8,9 +8,9 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class SearchPage {
-    private final By searchField = By.xpath(".//input[@type=\"search\"]");
-    private final By searchHeader = By.xpath(".//*[@id=\"hook_Block_SearchMRB\"]//div[@role=\"heading\"]");
-    private final By profiles = By.xpath(".//div[@id=\"tabpanel-users\"]//div[contains(@class, 'ellipted')]");
+    private final static By searchField = By.xpath(".//input[@type=\"search\"]");
+    private final static By searchHeader = By.xpath(".//*[@id=\"hook_Block_SearchMRB\"]//div[@role=\"heading\"]");
+    private final static By profiles = By.xpath(".//div[@id=\"tabpanel-users\"]//div[contains(@class, 'ellipted')]");
 
     public SearchPage() {
         checkPage();
@@ -26,5 +26,11 @@ public class SearchPage {
     public ElementsCollection searchPeoples() {
         return $$(profiles).shouldHave(sizeGreaterThan(0)
                 .because("Поиск должен найти карточки пользователей"));
+    }
+
+    public String getFirstResultValue() {
+        return searchPeoples().first()
+                .shouldBe(visible.because("Результаты поиска должны отображаться на странице"))
+                .text();
     }
 }

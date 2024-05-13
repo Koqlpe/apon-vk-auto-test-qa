@@ -7,10 +7,10 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class FeedPage extends BasePage {
     private final static String URL = "/feed";
-    private final By tapeButton = By.xpath(".//*[@data-l=\"feedTargetFilterId,43\"]"); // Рекомендации
-    private final By searchField = By.xpath(".//input[@name=\"st.query\"]");
-    private final By accountButton = By.xpath(".//*[@data-l=\"t,userPage\"]");
-    private final By accountLabel = By.xpath(".//*[@class=\"tico ellip\"]");
+    private final static By tapeButton = By.xpath(".//*[@data-l=\"feedTargetFilterId,43\"]"); // Рекомендации
+    private final static By searchField = By.xpath(".//input[@name=\"st.query\"]");
+    private final static By accountButton = By.xpath(".//*[@data-l=\"t,userPage\"]");
+    private final static By accountLabel = By.xpath(".//*[@class=\"tico ellip\"]");
 
 
     public FeedPage() {

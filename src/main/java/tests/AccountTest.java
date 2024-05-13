@@ -1,6 +1,5 @@
 package tests;
 
-import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -9,21 +8,23 @@ import pages.*;
 
 import java.io.File;
 
+import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static tests.TestBot.newBuilder;
 
 public class AccountTest extends BaseTest {
     private UserAccountPage myAccount;
     private ToolBar toolBar = new ToolBar();
+    TestBot testBot = newBuilder().buildDefault();
 
     @BeforeAll
     public static void openSiteAndLogin() {
-        String botUsername = "technopol33";
-        String botPassword = "technopolisPassword";
+        TestBot testBot = newBuilder().buildDefault();
 
         new LoginPage()
-                .setUsername(botUsername)
-                .setPassword(botPassword)
+                .setUsername(testBot.getBotUsername())
+                .setPassword(testBot.getBotPassword())
                 .clickLoginButton();
     }
 
@@ -49,42 +50,45 @@ public class AccountTest extends BaseTest {
 
     @Nested
     class PhotosTest {
-        private UserAccountPhotosPage myAccountPhotos;
+        UserAccountPhotosPage photosPage;
+        private PhotoAlbum album;
         private NavigationPanel navigation = new NavigationPanel();
+        File img = new File("src/main/resources/photos/vkeducation.jpg");
 
         @BeforeEach
         public void setup() {
-            myAccount = navigation.goToProfile();
+            //photosPage = navigation.goToPhoto();
+            open("/profile/" + testBot.getId() + "/photos");
         }
 
         @ParameterizedTest(name = "Тест: пользователь добавляет фото")
         @ValueSource(strings = {"Личные фотографии", "Разное"})
-        public void userAddPhotoTest(String album) {
-            myAccountPhotos = myAccount
-                    .goToPhotos()
-                    .openAlbum(album);
+        public void userAddPhotoTest(String albumName) {
+            photosPage = new UserAccountPhotosPage();
+            album = photosPage
+                    .openAlbum(albumName);
 
-            int expectedPhotosAmount = myAccountPhotos.countPhotos() + 1;
-            File img = new File("src/main/resources/photos/vkeducation.jpg");
-            myAccountPhotos.addPhoto(img);
+            int expectedPhotosAmount = album.countPhotos() + 1;
+            album.addPhoto(img);
 
-            assertEquals(expectedPhotosAmount, myAccountPhotos.countPhotos(), () -> album + ": Количество фотографий не совпадает");
+            assertEquals(expectedPhotosAmount, album.countPhotos(), () -> albumName + ": Количество фотографий не совпадает");
         }
 
         @Disabled("Был переработан на тест выше, планируется этот откорректировать, а здесь продемонстрировать ещё одну аннотацию JUnit :)")
         @ParameterizedTest(name = "Тест: пользователь добавляет первое фото")
         @ValueSource(strings = {"Личные фотографии", "Разное"})
         public void userAddFirstPhotoTest(String album) {
-            myAccountPhotos = myAccount
+            this.album = myAccount
                     .goToPhotos()
                     .openAlbum(album)
-                    .addPhoto(new File("src/main/resources/photos/vkeducation.jpg"));
-            assertFalse(myAccountPhotos.checkFirstPhotoWasLoaded(), () -> "Первое фото успешно загружено.");
+                    .addPhoto(img);
+
+            assertFalse(this.album.checkFirstPhotoWasLoaded(), "Первое фото успешно загружено.");
         }
 
         @AfterEach
         public void clear() {
-            myAccountPhotos.deletePhoto();
+            album.deletePhoto().goBackToAlbums();
         }
     }
 

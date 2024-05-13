@@ -1,28 +1,28 @@
 package tests;
 
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static tests.TestBot.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import pages.*;
+
 public class SearchUsersTest extends BaseTest {
     private FeedPage feed = new FeedPage();
-    private ToolBar toolBar = new ToolBar();
+    private final ToolBar toolBar = new ToolBar();
     private SearchPage searchPage;
 
     @BeforeAll
     public static void login() {
-        String botUsername = "technopol33";
-        String botPassword = "technopolisPassword";
+        TestBot testBot = newBuilder().buildDefault();
 
         new LoginPage()
-                .setUsername(botUsername)
-                .setPassword(botPassword)
+                .setUsername(testBot.getBotUsername())
+                .setPassword(testBot.getBotPassword())
                 .clickLoginButton();
     }
 
@@ -32,8 +32,8 @@ public class SearchUsersTest extends BaseTest {
        searchPage = feed
                 .searchFor(query);
        searchPage.checkPage();
-       SelenideElement firstResult = searchPage.searchPeoples().first();
-       assertTrue(firstResult.text().contains(query), () -> "Первый результат не совпадает с запросом: " + query);
+       String firstResult = searchPage.getFirstResultValue().toLowerCase();
+       assertTrue(firstResult.contains(query.toLowerCase()), () -> "Первый результат не совпадает с запросом: " + query);
     }
 
     @AfterEach

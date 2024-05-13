@@ -8,14 +8,12 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.url;
 
 public class UserAccountPage extends BasePage {
-    private final By username = By.xpath(".//h1[@class=\"__user-profile-name-decorator\"]");
-    private final By profileEntry = By.xpath(".//*[@class=\"profile-user-info_name\"]");
-    private final By photos = By.xpath(".//*[@data-l=\"t,header-v2\"]");
-    private final By statusActivation = By.xpath(".//*[@data-save-url=\"/dk?cmd=SaveProfileInfo\"]");
-
-    private final By statusField = By.xpath(".//div[@tsid=\"TextFieldText\"]");
-    private final By statusEditField = By.xpath(".//textarea[@name=\"long_bio\"]");
-    private final By saveStatusButton = By.xpath(".//button[@data-l=\"t,textField-save\"]");
+    private final static By username = By.xpath(".//h1[@class=\"__user-profile-name-decorator\"]");
+    private final static By profileEntry = By.xpath(".//*[@class=\"profile-user-info_name\"]");
+    private final static By photos = By.xpath(".//*[@data-l=\"t,header-v2\"]");
+    private final static By statusActivation = By.xpath(".//*[@data-save-url=\"/dk?cmd=SaveProfileInfo\"]");
+    private final static By statusEditField = By.xpath(".//textarea[@name=\"long_bio\"]");
+    private final static By saveStatusButton = By.xpath(".//button[@data-l=\"t,textField-save\"]");
 
     public UserAccountPage() {
         checkPage();
@@ -38,12 +36,22 @@ public class UserAccountPage extends BasePage {
 
     public UserAccountPage setStatus(String status) {
         $(statusActivation).shouldBe(visible.because("Для изменения статуса должно отображаться поле статуса")).click();
-        $(statusEditField)
+
+        if (status.isEmpty() || status.isBlank())
+            $(statusEditField)
+                    .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
+                    .clear();
+        else
+            $(statusEditField)
                 .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
                 .setValue(status);
+
         $(saveStatusButton)
                 .shouldBe(enabled.because("Кнопка Сохранение должна быть доступна"))
                 .click();
-        return this;
+
+        System.out.println(status);
+        System.out.println($(statusEditField).text());
+        return new UserAccountPage();
     }
 }

@@ -5,11 +5,11 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage extends BasePage {
-    private final By loginField = By.xpath(".//*[@id=\"field_email\"]");
-    private final By passwordField = By.xpath(".//*[@id=\"field_password\"]");
+    private final static By loginField = By.xpath(".//*[@id=\"field_email\"]");
+    private final static By passwordField = By.xpath(".//*[@id=\"field_password\"]");
 
-    private final By loginButton = By.xpath(".//*[@class=\"button-pro __wide\"]");
-    private final By errorMessage = By.xpath(".//*[@class=\"input-e login_error\"]");
+    private final static By loginButton = By.xpath(".//*[@class=\"button-pro __wide\"]");
+    private final static By errorMessage = By.xpath(".//*[@class=\"input-e login_error\"]");
 
     public LoginPage() {
         checkPage();
@@ -27,7 +27,7 @@ public class LoginPage extends BasePage {
 
     public LoginPage setUsername(String username) {
         $(loginField)
-                .shouldBe(enabled.because("В поле Логин должна быть возможно вводить логин"))
+                .shouldBe(enabled.because("В поле Логин должна быть возможность вводить логин"))
                 .val(username);
         return this;
     }

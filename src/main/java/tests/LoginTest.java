@@ -9,10 +9,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import pages.*;
 
 public class LoginTest extends BaseTest {
-    public final String botUsername = "technopol33";
-    public final String botPassword = "technopolisPassword";
-    private final String noLogin = "Введите логин";
-    private final String noPassword = "Введите пароль";
+    public final static String botUsername = "technopol33";
+    public final static String botPassword = "technopolisPassword";
+    private final static String noLogin = "Введите логин";
+    private final static String noPassword = "Введите пароль";
 
     @Nested
     class LoginWithExistUser {
