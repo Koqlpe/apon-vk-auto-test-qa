@@ -22,6 +22,10 @@ public class PhotoAlbum extends BasePage {
     private final static By emptyAlbumLabel = By.xpath(".//*[@class=\"photo-album_stub\"]");
     private final static By rootButton = By.xpath(".//a[@data-l=\"t,root\"]");
 
+    public PhotoAlbum() {
+        checkPage();
+    }
+
     @Override
     public void checkPage() {
         $(albumName).shouldBe(visible

@@ -11,6 +11,10 @@ public class ToolBar extends BasePage {
     private final static By exitButton = By.xpath(".//div[@class=\"toolbar_dropdown\"]//a[@data-l=\"t,logout\"]");
     public final static By confirmExitButton = By.xpath(".//input[@data-l=\"t,logout\"]");
 
+    public ToolBar() {
+        checkPage();
+    }
+
     @Override
     public void checkPage() {
         $(profileToolBar).shouldBe(visible
