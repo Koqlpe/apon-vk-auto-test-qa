@@ -2,6 +2,9 @@ package pages;
 
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+
+import java.util.Objects;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
@@ -14,6 +17,7 @@ public class UserAccountPage extends BasePage {
     private final static By statusActivation = By.xpath(".//*[@data-save-url=\"/dk?cmd=SaveProfileInfo\"]");
     private final static By statusEditField = By.xpath(".//textarea[@name=\"long_bio\"]");
     private final static By saveStatusButton = By.xpath(".//button[@data-l=\"t,textField-save\"]");
+    private final static By statusTextField = By.xpath(".//div[@tsid=\"TextFieldText\"]");
 
     public UserAccountPage() {
         checkPage();
@@ -38,20 +42,28 @@ public class UserAccountPage extends BasePage {
         $(statusActivation).shouldBe(visible.because("Для изменения статуса должно отображаться поле статуса")).click();
 
         if (status.isEmpty() || status.isBlank())
-            $(statusEditField)
-                    .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
-                    .clear();
+//            $(statusEditField)
+//                    .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
+//                    .clear();
+            clearStatusFiled();
+
         else
             $(statusEditField)
-                .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
-                .setValue(status);
+                    .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"))
+                    .setValue(status);
 
         $(saveStatusButton)
                 .shouldBe(enabled.because("Кнопка Сохранение должна быть доступна"))
                 .click();
 
-        System.out.println(status);
-        System.out.println($(statusEditField).text());
         return new UserAccountPage();
+    }
+
+    private void clearStatusFiled() {
+        SelenideElement status = $(statusEditField)
+                .shouldBe(exist.because("Для изменения статуса поле должно быть доступно для редактирования"));
+        while (!Objects.requireNonNull(status.val()).isEmpty()) {
+            status.press(Keys.BACK_SPACE);
+        }
     }
 }
